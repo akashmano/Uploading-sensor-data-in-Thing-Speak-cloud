@@ -71,10 +71,69 @@ Automatically act on your data and communicate using third-party services like T
 
 
 # PROGRAM:
+```
+#include "DHT.h"
+#include "ThingSpeak.h"
+#include <WiFi.h>
 
+char ssid[]="Mudiyathuu";
+char pass[]="chalowww";
+WiFiClient client;
+
+const int out=2;
+long T;
+float temperature=0;
+float humidity=0;
+DHT dht(out, DHT11);
+
+unsigned long myChannelField=3106383;
+const int TemperatureField=1;
+const int HumidityField=2;
+const char* myWriteAPIKey="65CYHAC1730U46Z9";
+
+void setup() {
+  Serial.begin(115200);
+  ThingSpeak.begin(client);
+  dht.begin();
+  pinMode(out,INPUT);
+
+}
+
+void loop() {
+  if(WiFi.status()!=WL_CONNECTED)
+  {
+    Serial.print("Attempting to connect SSID: ");
+    Serial.println(ssid);
+    while(WiFi.status()!=WL_CONNECTED)
+    {
+      WiFi.begin(ssid,pass);
+      Serial.print(".");
+      delay(5000);
+    }
+    Serial.println("\nConnected.");
+  }
+  temperature=dht.readTemperature();
+  humidity=dht.readHumidity();
+
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.println(" g.m-3");
+  
+  ThingSpeak.setField(TemperatureField,temperature);
+   ThingSpeak.setField(HumidityField,humidity);
+  ThingSpeak.writeFields(myChannelField,myWriteAPIKey);
+  delay(5000);
+}
+```
 # CIRCUIT DIAGRAM:
-
+![WhatsApp Image 2025-10-16 at 09 36 44_e553f3df](https://github.com/user-attachments/assets/2b73ca29-845c-4631-ba34-28a1aeefcf18)
 # OUTPUT:
+<img width="1872" height="914" alt="Screenshot 2025-10-31 095454" src="https://github.com/user-attachments/assets/726e6a10-dd80-4301-be23-7d6d2b661b61" />
+
+<img width="1855" height="895" alt="Screenshot 2025-10-31 094519" src="https://github.com/user-attachments/assets/8c94304e-5e18-4d76-b3af-1588241466c7" />
 
 # RESULT:
 
